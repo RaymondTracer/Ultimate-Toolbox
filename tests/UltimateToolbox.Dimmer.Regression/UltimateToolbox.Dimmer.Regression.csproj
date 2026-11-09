@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>UltimateToolbox.Dimmer.Regression</AssemblyName>
+    <RootNamespace>UltimateToolbox.Dimmer.Regression</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../features/Dimmer/Dimmer.Core/Dimmer.Core.csproj" />
+  </ItemGroup>
+</Project>

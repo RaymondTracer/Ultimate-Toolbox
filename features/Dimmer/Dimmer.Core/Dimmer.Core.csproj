@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>UltimateToolbox.Dimmer.Core</AssemblyName>
+    <RootNamespace>UltimateToolbox.Dimmer</RootNamespace>
+  </PropertyGroup>
+</Project>

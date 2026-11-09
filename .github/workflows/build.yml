@@ -18,3 +18,5 @@ jobs:
           dotnet-version: 10.0.x
       - name: Build Windows and Linux desktop host
         run: dotnet build UltimateToolbox.sln --configuration Release
+      - name: Run Dimmer schedule regression checks
+        run: dotnet run --project tests/UltimateToolbox.Dimmer.Regression --configuration Release
