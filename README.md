@@ -11,9 +11,10 @@ The desktop shell uses Avalonia so the shared host UI can run on Windows and Lin
 - A module declares its name, ID, description, and supported operating systems through `FeatureMetadata`.
 - Modules that do not support the current OS are shown as unavailable and are not started.
 - Each module gets its own settings store and data directory.
-- The host provides shared display enumeration and full-screen input-transparent overlays. The current native backends are Windows and X11; other Linux display backends return an explicit unsupported error.
+- The host provides shared display enumeration, full-screen input-transparent overlays, and disposable cursor-visibility leases. The current native backends are Windows and X11; other Linux display backends return an explicit unsupported error.
 - A module can keep background work running while its view is closed; the host stops it during shutdown.
 - The build workflow compiles the host on both Windows and Linux.
+- The [Auto Blank Screen module](features/AutoBlankScreen/README.md) is available separately and restores the original idle, wake, and audio-blocking behavior.
 - The [Process Priority module](features/ProcessPriority/README.md) is available separately and starts with an empty process-rule list.
 - The [Automatic Power Plan module](features/AutomaticPowerPlan/README.md) is available separately, carries over the existing build watcher rules, and restores the prior profile after activity ends.
 
@@ -66,7 +67,6 @@ Feature assemblies run in the host process with the user's permissions. Only ins
 
 ## Feature modules in progress
 
-- Auto Blank Screen rewrite
 - Lock Key Manager
 - Further Dimmer UI and platform verification
 - Window layout management

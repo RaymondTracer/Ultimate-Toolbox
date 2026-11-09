@@ -15,6 +15,8 @@ internal sealed class AvaloniaDisplayOverlayService : IDisplayOverlayService
     private readonly Func<Window?> _mainWindowProvider;
     private readonly HashSet<OverlayHandle> _overlays = [];
     private Screens? _screens;
+    private IDisposable? _cursorVisibility;
+    private int _cursorVisibilityLeaseCount;
     private bool _disposed;
 
     public AvaloniaDisplayOverlayService(Func<Window?> mainWindowProvider)
@@ -108,6 +110,22 @@ internal sealed class AvaloniaDisplayOverlayService : IDisplayOverlayService
         }
     }
 
+    public IDisposable HideCursor()
+    {
+        Dispatcher.UIThread.VerifyAccess();
+        ObjectDisposedException.ThrowIf(_disposed, this);
+
+        if (_cursorVisibilityLeaseCount == 0)
+        {
+            var platformHandle = _mainWindowProvider()?.TryGetPlatformHandle()
+                ?? throw new InvalidOperationException("The host window does not have a native display handle yet.");
+            _cursorVisibility = NativeCursorVisibility.Acquire(platformHandle);
+        }
+
+        _cursorVisibilityLeaseCount++;
+        return new CursorVisibilityLease(this);
+    }
+
     public void Dispose()
     {
         Dispatcher.UIThread.VerifyAccess();
@@ -128,7 +146,32 @@ internal sealed class AvaloniaDisplayOverlayService : IDisplayOverlayService
             overlay.Dispose();
         }
 
+        RestoreCursorVisibility();
+
         DisplaysChanged = null;
+    }
+
+    private void ReleaseCursorVisibility()
+    {
+        Dispatcher.UIThread.VerifyAccess();
+        if (_disposed || _cursorVisibilityLeaseCount == 0)
+        {
+            return;
+        }
+
+        _cursorVisibilityLeaseCount--;
+        if (_cursorVisibilityLeaseCount == 0)
+        {
+            RestoreCursorVisibility();
+        }
+    }
+
+    private void RestoreCursorVisibility()
+    {
+        var visibility = _cursorVisibility;
+        _cursorVisibility = null;
+        _cursorVisibilityLeaseCount = 0;
+        visibility?.Dispose();
     }
 
     private Screens GetScreens()
@@ -184,6 +227,181 @@ internal sealed class AvaloniaDisplayOverlayService : IDisplayOverlayService
             _disposed = true;
             owner._overlays.Remove(this);
             window.Close();
+        }
+    }
+
+    private sealed class CursorVisibilityLease(AvaloniaDisplayOverlayService owner) : IDisposable
+    {
+        private bool _disposed;
+
+        public void Dispose()
+        {
+            Dispatcher.UIThread.VerifyAccess();
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
+            owner.ReleaseCursorVisibility();
+        }
+    }
+}
+
+internal static class NativeCursorVisibility
+{
+    public static IDisposable Acquire(IPlatformHandle platformHandle)
+    {
+        if (OperatingSystem.IsWindows() && platformHandle.HandleDescriptor == "HWND")
+        {
+            return WindowsCursorVisibility.Acquire();
+        }
+
+        if (OperatingSystem.IsLinux() && platformHandle.HandleDescriptor == "X11")
+        {
+            return X11CursorVisibility.Acquire();
+        }
+
+        throw new PlatformNotSupportedException(
+            $"Cursor hiding is not available for this display backend ({platformHandle.HandleDescriptor}).");
+    }
+
+    private static class WindowsCursorVisibility
+    {
+        private const int MaximumBalanceCalls = 64;
+
+        public static IDisposable Acquire()
+        {
+            var calls = 0;
+            var displayCount = 0;
+            do
+            {
+                displayCount = ShowCursor(false);
+                calls++;
+            }
+            while (displayCount >= 0 && calls < MaximumBalanceCalls);
+
+            if (displayCount >= 0)
+            {
+                Restore(calls);
+                throw new InvalidOperationException("The Windows pointer display count could not be balanced to a hidden state.");
+            }
+
+            return new WindowsCursorLease(calls);
+        }
+
+        private static void Restore(int calls)
+        {
+            for (var index = 0; index < calls; index++)
+            {
+                ShowCursor(true);
+            }
+        }
+
+        [DllImport("user32.dll", EntryPoint = "ShowCursor")]
+        private static extern int ShowCursor([MarshalAs(UnmanagedType.Bool)] bool show);
+
+        private sealed class WindowsCursorLease(int balanceCalls) : IDisposable
+        {
+            private bool _disposed;
+
+            public void Dispose()
+            {
+                if (_disposed)
+                {
+                    return;
+                }
+
+                _disposed = true;
+                Restore(balanceCalls);
+            }
+        }
+    }
+
+    private static class X11CursorVisibility
+    {
+        public static IDisposable Acquire()
+        {
+            IntPtr display;
+            try
+            {
+                display = XOpenDisplay(IntPtr.Zero);
+            }
+            catch (DllNotFoundException exception)
+            {
+                throw new PlatformNotSupportedException("The X11 client libraries are unavailable.", exception);
+            }
+
+            if (display == IntPtr.Zero)
+            {
+                throw new PlatformNotSupportedException("Could not connect to the active X11 display.");
+            }
+
+            try
+            {
+                if (!XFixesQueryExtension(display, out _, out _))
+                {
+                    throw new PlatformNotSupportedException("The X11 server does not provide the XFixes cursor extension.");
+                }
+
+                var rootWindow = XRootWindow(display, XDefaultScreen(display));
+                XFixesHideCursor(display, rootWindow);
+                XFlush(display);
+                return new X11CursorLease(display, rootWindow);
+            }
+            catch (DllNotFoundException exception)
+            {
+                XCloseDisplay(display);
+                throw new PlatformNotSupportedException("The XFixes library is unavailable.", exception);
+            }
+            catch
+            {
+                XCloseDisplay(display);
+                throw;
+            }
+        }
+
+        [DllImport("libX11.so.6", EntryPoint = "XOpenDisplay")]
+        private static extern IntPtr XOpenDisplay(IntPtr displayName);
+
+        [DllImport("libX11.so.6", EntryPoint = "XDefaultScreen")]
+        private static extern int XDefaultScreen(IntPtr display);
+
+        [DllImport("libX11.so.6", EntryPoint = "XRootWindow")]
+        private static extern UIntPtr XRootWindow(IntPtr display, int screenNumber);
+
+        [DllImport("libX11.so.6", EntryPoint = "XFlush")]
+        private static extern int XFlush(IntPtr display);
+
+        [DllImport("libX11.so.6", EntryPoint = "XCloseDisplay")]
+        private static extern int XCloseDisplay(IntPtr display);
+
+        [DllImport("libXfixes.so.3", EntryPoint = "XFixesQueryExtension")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool XFixesQueryExtension(IntPtr display, out int eventBase, out int errorBase);
+
+        [DllImport("libXfixes.so.3", EntryPoint = "XFixesHideCursor")]
+        private static extern void XFixesHideCursor(IntPtr display, UIntPtr window);
+
+        [DllImport("libXfixes.so.3", EntryPoint = "XFixesShowCursor")]
+        private static extern void XFixesShowCursor(IntPtr display, UIntPtr window);
+
+        private sealed class X11CursorLease(IntPtr display, UIntPtr rootWindow) : IDisposable
+        {
+            private IntPtr _display = display;
+
+            public void Dispose()
+            {
+                if (_display == IntPtr.Zero)
+                {
+                    return;
+                }
+
+                XFixesShowCursor(_display, rootWindow);
+                XFlush(_display);
+                XCloseDisplay(_display);
+                _display = IntPtr.Zero;
+            }
         }
     }
 }

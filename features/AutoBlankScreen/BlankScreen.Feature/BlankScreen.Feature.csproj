@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>UltimateToolbox.AutoBlankScreen.tbfeature</AssemblyName>
+    <RootNamespace>UltimateToolbox.AutoBlankScreen.Feature</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../src/UltimateToolbox.Contracts/UltimateToolbox.Contracts.csproj" />
+    <ProjectReference Include="../BlankScreen.Core/BlankScreen.Core.csproj" />
+  </ItemGroup>
+</Project>

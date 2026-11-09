@@ -23,6 +23,10 @@ public interface IDisplayOverlayService : IDisposable
 
     /// <remarks>Call on Avalonia's UI thread. The returned handle closes the overlay when disposed.</remarks>
     IDisplayOverlayHandle CreateFullScreenOverlay(FeatureDisplay display, Control content, bool topmost = true);
+
+    /// <summary>Temporarily hides the pointer on the active display backend.</summary>
+    /// <remarks>Call on Avalonia's UI thread. The returned lease restores pointer visibility when disposed.</remarks>
+    IDisposable HideCursor();
 }
 
 public interface IDisplayOverlayHandle : IDisposable
