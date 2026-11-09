@@ -16,7 +16,8 @@ public sealed class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var featureDirectory = FeaturePaths.FeatureDirectory;
-            var catalog = FeatureCatalog.Load(featureDirectory);
+            var displayOverlays = new AvaloniaDisplayOverlayService(() => desktop.MainWindow);
+            var catalog = FeatureCatalog.Load(featureDirectory, displayOverlays);
             desktop.MainWindow = new MainWindow(catalog, featureDirectory);
         }
 

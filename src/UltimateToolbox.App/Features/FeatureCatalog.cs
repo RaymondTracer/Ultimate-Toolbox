@@ -8,19 +8,25 @@ namespace UltimateToolbox;
 internal sealed class FeatureCatalog : IDisposable
 {
     private static readonly Regex FeatureIdPattern = new("^[a-z0-9][a-z0-9._-]{0,127}$", RegexOptions.Compiled);
+    private readonly IDisplayOverlayService _displayOverlays;
 
-    private FeatureCatalog(IReadOnlyList<LoadedFeature> features, IReadOnlyList<FeatureLoadIssue> issues)
+    private FeatureCatalog(
+        IReadOnlyList<LoadedFeature> features,
+        IReadOnlyList<FeatureLoadIssue> issues,
+        IDisplayOverlayService displayOverlays)
     {
         Features = features;
         Issues = issues;
+        _displayOverlays = displayOverlays;
     }
 
     public IReadOnlyList<LoadedFeature> Features { get; }
 
     public IReadOnlyList<FeatureLoadIssue> Issues { get; }
 
-    public static FeatureCatalog Load(string featureDirectory)
+    public static FeatureCatalog Load(string featureDirectory, IDisplayOverlayService displayOverlays)
     {
+        ArgumentNullException.ThrowIfNull(displayOverlays);
         Directory.CreateDirectory(featureDirectory);
         var features = new List<LoadedFeature>();
         var issues = new List<FeatureLoadIssue>();
@@ -63,7 +69,7 @@ internal sealed class FeatureCatalog : IDisposable
                 }
 
                 var dataDirectory = Path.Combine(FeaturePaths.DataDirectory, "feature-data", module.Metadata.Id);
-                var context = new FeatureContext(module.Metadata, dataDirectory, currentOperatingSystem);
+                var context = new FeatureContext(module.Metadata, dataDirectory, currentOperatingSystem, displayOverlays);
                 var isSupported = module.Metadata.SupportedOperatingSystems.Contains(currentOperatingSystem);
                 features.Add(new LoadedFeature(assemblyPath, module, context, isSupported, loadContext));
             }
@@ -74,7 +80,7 @@ internal sealed class FeatureCatalog : IDisposable
             }
         }
 
-        return new FeatureCatalog(features, issues);
+        return new FeatureCatalog(features, issues, displayOverlays);
     }
 
     public void Dispose()
@@ -83,6 +89,8 @@ internal sealed class FeatureCatalog : IDisposable
         {
             feature.LoadContext.Unload();
         }
+
+        _displayOverlays.Dispose();
     }
 
     private static void ValidateMetadata(FeatureMetadata? metadata)

@@ -11,4 +11,6 @@ public interface IFeatureContext
     IFeatureSettingsStore Settings { get; }
 
     IFeatureLogger Logger { get; }
+
+    IDisplayOverlayService DisplayOverlays { get; }
 }

@@ -4,13 +4,18 @@ namespace UltimateToolbox;
 
 internal sealed class FeatureContext : IFeatureContext
 {
-    public FeatureContext(FeatureMetadata metadata, string dataDirectory, FeatureOperatingSystem currentOperatingSystem)
+    public FeatureContext(
+        FeatureMetadata metadata,
+        string dataDirectory,
+        FeatureOperatingSystem currentOperatingSystem,
+        IDisplayOverlayService displayOverlays)
     {
         Metadata = metadata;
         DataDirectory = dataDirectory;
         CurrentOperatingSystem = currentOperatingSystem;
         Settings = new JsonFeatureSettingsStore(Path.Combine(FeaturePaths.SettingsDirectory, $"{metadata.Id}.json"));
         Logger = new TraceFeatureLogger(metadata.Id);
+        DisplayOverlays = displayOverlays;
     }
 
     public FeatureMetadata Metadata { get; }
@@ -22,4 +27,6 @@ internal sealed class FeatureContext : IFeatureContext
     public IFeatureSettingsStore Settings { get; }
 
     public IFeatureLogger Logger { get; }
+
+    public IDisplayOverlayService DisplayOverlays { get; }
 }

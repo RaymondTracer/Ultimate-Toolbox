@@ -11,6 +11,7 @@ The desktop shell uses Avalonia so the shared host UI can run on Windows and Lin
 - A module declares its name, ID, description, and supported operating systems through `FeatureMetadata`.
 - Modules that do not support the current OS are shown as unavailable and are not started.
 - Each module gets its own settings store and data directory.
+- The host provides shared display enumeration and full-screen input-transparent overlays. The current native backends are Windows and X11; other Linux display backends return an explicit unsupported error.
 - A module can keep background work running while its view is closed; the host stops it during shutdown.
 - The build workflow compiles the host on both Windows and Linux.
 
