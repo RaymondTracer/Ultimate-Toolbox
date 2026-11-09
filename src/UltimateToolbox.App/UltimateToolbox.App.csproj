@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>UltimateToolbox</AssemblyName>
+    <RootNamespace>UltimateToolbox</RootNamespace>
+    <PublishTrimmed>false</PublishTrimmed>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Desktop" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../UltimateToolbox.Contracts/UltimateToolbox.Contracts.csproj" />
+  </ItemGroup>
+</Project>
