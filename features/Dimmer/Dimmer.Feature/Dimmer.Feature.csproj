@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>UltimateToolbox.Dimmer.tbfeature</AssemblyName>
+    <RootNamespace>UltimateToolbox.Dimmer.Feature</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../src/UltimateToolbox.Contracts/UltimateToolbox.Contracts.csproj" />
+    <ProjectReference Include="../Dimmer.Core/Dimmer.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="dimmer.ico" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

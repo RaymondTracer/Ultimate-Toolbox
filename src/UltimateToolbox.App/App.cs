@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Styling;
 using Avalonia.Themes.Fluent;
 
 namespace UltimateToolbox;
@@ -8,6 +9,7 @@ public sealed class App : Application
 {
     public override void Initialize()
     {
+        RequestedThemeVariant = ThemeVariant.Dark;
         Styles.Add(new FluentTheme());
     }
 

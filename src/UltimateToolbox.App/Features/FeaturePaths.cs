@@ -10,6 +10,17 @@ internal static class FeaturePaths
 
     private static string ResolveDataDirectory()
     {
+        var configuredDataHome = Environment.GetEnvironmentVariable("ULTIMATE_TOOLBOX_DATA_HOME");
+        if (!string.IsNullOrWhiteSpace(configuredDataHome))
+        {
+            if (!Path.IsPathRooted(configuredDataHome))
+            {
+                throw new InvalidOperationException("ULTIMATE_TOOLBOX_DATA_HOME must be an absolute path.");
+            }
+
+            return Path.GetFullPath(configuredDataHome);
+        }
+
         if (OperatingSystem.IsWindows())
         {
             var localApplicationData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);

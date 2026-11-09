@@ -23,6 +23,18 @@ Equal("selected night temperature is reached", 4500, SolarSchedule.BlendTemperat
 Equal("neutral day endpoint is restored", null, SolarSchedule.BlendTemperature(4500, null, 1));
 Equal("selected temperature endpoints blend together", 5250, SolarSchedule.BlendTemperature(4500, 6000, 0.5));
 
+var identityRamp = new ushort[] { 0, 16384, 65535, 0, 16384, 65535, 0, 16384, 65535 };
+SequenceEqual(
+    "neutral temperature keeps the original RGB ramp",
+    identityRamp,
+    ColorTemperatureMath.ApplyToRgbRamp(identityRamp, 3, (1, 1, 1)));
+SequenceEqual("zero-scale temperature ramp is black", new ushort[] { 0, 0, 0 }, ColorTemperatureMath.ScaleRamp([1, 32768, 65535], 0));
+Near("4500 K red factor stays neutral", 1, ColorTemperatureMath.ToRgbFactors(4500).Red);
+if (ColorTemperatureMath.ToRgbFactors(4500).Blue >= ColorTemperatureMath.ToRgbFactors(4500).Red)
+{
+    throw new InvalidOperationException("4500 K should reduce blue more strongly than red.");
+}
+
 if (SolarSchedule.TryGetDayBlend(At(12, 0), [], transitionMinutes, out _))
 {
     throw new InvalidOperationException("An empty solar cache should report that no schedule can be evaluated.");
@@ -57,5 +69,13 @@ static void Equal<T>(string name, T expected, T actual)
     if (!EqualityComparer<T>.Default.Equals(expected, actual))
     {
         throw new InvalidOperationException($"{name}: expected {expected}, got {actual}.");
+    }
+}
+
+static void SequenceEqual<T>(string name, IReadOnlyList<T> expected, IReadOnlyList<T> actual)
+{
+    if (!expected.SequenceEqual(actual))
+    {
+        throw new InvalidOperationException($"{name}: sequences did not match.");
     }
 }

@@ -28,4 +28,7 @@ public interface IDisplayOverlayService : IDisposable
 public interface IDisplayOverlayHandle : IDisposable
 {
     FeatureDisplay Display { get; }
+
+    /// <remarks>Call on Avalonia's UI thread.</remarks>
+    void SetTopmost(bool topmost);
 }

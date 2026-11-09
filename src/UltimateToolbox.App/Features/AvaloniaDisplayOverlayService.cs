@@ -165,6 +165,14 @@ internal sealed class AvaloniaDisplayOverlayService : IDisplayOverlayService
 
         public FeatureDisplay Display { get; } = display;
 
+        public void SetTopmost(bool topmost)
+        {
+            Dispatcher.UIThread.VerifyAccess();
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            window.Topmost = topmost;
+            NativeOverlayInput.SetTopmost(window.TryGetPlatformHandle(), topmost);
+        }
+
         public void Dispose()
         {
             Dispatcher.UIThread.VerifyAccess();
@@ -239,11 +247,24 @@ internal static class NativeOverlayInput
             throw new Win32Exception(lastError, "Could not enable input transparency for the overlay.");
         }
 
+        SetWindowsTopmost(hwnd, topmost);
+    }
+
+    public static void SetTopmost(IPlatformHandle? platformHandle, bool topmost)
+    {
+        if (OperatingSystem.IsWindows() && platformHandle?.HandleDescriptor == "HWND")
+        {
+            SetWindowsTopmost(platformHandle.Handle, topmost);
+        }
+    }
+
+    private static void SetWindowsTopmost(IntPtr hwnd, bool topmost)
+    {
         var insertAfter = new IntPtr(topmost ? HwndTopmost : HwndNoTopmost);
         if (!SetWindowPos(hwnd, insertAfter, 0, 0, 0, 0,
                 SwpNoSize | SwpNoMove | SwpNoActivate | SwpFrameChanged))
         {
-            throw new Win32Exception(Marshal.GetLastPInvokeError(), "Could not update the overlay window styles.");
+            throw new Win32Exception(Marshal.GetLastPInvokeError(), "Could not update the overlay window z-order.");
         }
     }
 
