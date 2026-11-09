@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>UltimateToolbox.PowerPlan.tbfeature</AssemblyName>
+    <RootNamespace>UltimateToolbox.PowerPlan.Feature</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../src/UltimateToolbox.Contracts/UltimateToolbox.Contracts.csproj" />
+    <ProjectReference Include="../PowerPlan.Core/PowerPlan.Core.csproj" />
+    <ProjectReference Include="../../ProcessPriority/ProcessPriority.Core/ProcessPriority.Core.csproj" />
+    <PackageReference Include="System.Management" />
+  </ItemGroup>
+</Project>

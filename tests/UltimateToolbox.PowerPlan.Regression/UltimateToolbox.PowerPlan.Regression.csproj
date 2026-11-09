@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>UltimateToolbox.PowerPlan.Regression</AssemblyName>
+    <RootNamespace>UltimateToolbox.PowerPlan.Regression</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../features/AutomaticPowerPlan/PowerPlan.Core/PowerPlan.Core.csproj" />
+  </ItemGroup>
+</Project>

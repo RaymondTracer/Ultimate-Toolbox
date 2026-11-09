@@ -15,6 +15,7 @@ The desktop shell uses Avalonia so the shared host UI can run on Windows and Lin
 - A module can keep background work running while its view is closed; the host stops it during shutdown.
 - The build workflow compiles the host on both Windows and Linux.
 - The [Process Priority module](features/ProcessPriority/README.md) is available separately and starts with an empty process-rule list.
+- The [Automatic Power Plan module](features/AutomaticPowerPlan/README.md) is available separately, carries over the existing build watcher rules, and restores the prior profile after activity ends.
 
 ## Build and run
 
@@ -68,7 +69,6 @@ Feature assemblies run in the host process with the user's permissions. Only ins
 - Auto Blank Screen rewrite
 - Lock Key Manager
 - Further Dimmer UI and platform verification
-- Automatic power-plan switching
 - Window layout management
 
 Remaining utilities stay optional and will be added as separately loadable modules, with OS support declared per feature.

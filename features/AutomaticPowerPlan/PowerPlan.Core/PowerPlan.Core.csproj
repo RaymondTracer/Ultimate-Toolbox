@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>UltimateToolbox.PowerPlan.Core</AssemblyName>
+    <RootNamespace>UltimateToolbox.PowerPlan</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../ProcessPriority/ProcessPriority.Core/ProcessPriority.Core.csproj" />
+  </ItemGroup>
+</Project>
