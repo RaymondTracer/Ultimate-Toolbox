@@ -448,26 +448,4 @@ internal sealed class DimmerView : StackPanel
         public override string ToString() => Label;
     }
 
-    private sealed class FeatureCard : Border
-    {
-        private readonly StackPanel _content;
-
-        public FeatureCard(string title)
-        {
-            Padding = new Thickness(15);
-            CornerRadius = new CornerRadius(8);
-            Background = Brush("#202631");
-            _content = new StackPanel { Spacing = 9 };
-            _content.Children.Add(new TextBlock
-            {
-                Text = title,
-                FontSize = 17,
-                FontWeight = FontWeight.SemiBold,
-                Margin = new Thickness(0, 0, 0, 2)
-            });
-            Child = _content;
-        }
-
-        public void Add(Control control) => _content.Children.Add(control);
-    }
 }

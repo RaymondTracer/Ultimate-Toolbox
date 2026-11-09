@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>UltimateToolbox.ProcessPriority.Core</AssemblyName>
+    <RootNamespace>UltimateToolbox.ProcessPriority</RootNamespace>
+  </PropertyGroup>
+</Project>

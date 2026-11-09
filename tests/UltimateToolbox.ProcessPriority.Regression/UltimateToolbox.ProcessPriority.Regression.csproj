@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>UltimateToolbox.ProcessPriority.Regression</AssemblyName>
+    <RootNamespace>UltimateToolbox.ProcessPriority.Regression</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../features/ProcessPriority/ProcessPriority.Core/ProcessPriority.Core.csproj" />
+  </ItemGroup>
+</Project>

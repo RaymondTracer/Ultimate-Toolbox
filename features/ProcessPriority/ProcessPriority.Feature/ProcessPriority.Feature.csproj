@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>UltimateToolbox.ProcessPriority.tbfeature</AssemblyName>
+    <RootNamespace>UltimateToolbox.ProcessPriority.Feature</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../src/UltimateToolbox.Contracts/UltimateToolbox.Contracts.csproj" />
+    <ProjectReference Include="../ProcessPriority.Core/ProcessPriority.Core.csproj" />
+  </ItemGroup>
+</Project>

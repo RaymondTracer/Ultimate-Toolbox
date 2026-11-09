@@ -14,6 +14,7 @@ The desktop shell uses Avalonia so the shared host UI can run on Windows and Lin
 - The host provides shared display enumeration and full-screen input-transparent overlays. The current native backends are Windows and X11; other Linux display backends return an explicit unsupported error.
 - A module can keep background work running while its view is closed; the host stops it during shutdown.
 - The build workflow compiles the host on both Windows and Linux.
+- The [Process Priority module](features/ProcessPriority/README.md) is available separately and starts with an empty process-rule list.
 
 ## Build and run
 
@@ -62,13 +63,12 @@ Use shared feature logic for rules and state transitions. Put Windows or Linux c
 
 Feature assemblies run in the host process with the user's permissions. Only install modules you trust; .NET assembly loading does not sandbox plugin code.
 
-## Planned feature modules
+## Feature modules in progress
 
 - Auto Blank Screen rewrite
 - Lock Key Manager
-- Dimmer rewrite
+- Further Dimmer UI and platform verification
 - Automatic power-plan switching
-- Generic process-priority rules, based on the existing Zandronum priority watcher
 - Window layout management
 
-These utilities are not bundled with the base host. Each will be added as a separately loadable module, with OS support declared per feature.
+Remaining utilities stay optional and will be added as separately loadable modules, with OS support declared per feature.
